@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if not user.is_authenticated %}
+        <a href="/login">Login</a><br>
+        <a href="/register">Register</a><br>
+    {% elif user.is_authenticated and user.is_staff %}
+        <a href="create">Create Projection</a><br>
+        <a href="update">Update Projection</a><br>
+        <a href="delete">Delete Projection</a><br>
+        <a href="/logout">Log out</a><br>
+    {% else %}
+        <a href="/logout">Log out</a><br>
+    {% endif %}
+    <h2>Projections</h2>
+    {% for i in projections %}
+        <p>Movie Name: {{ i.movieName }} , Screening Time: {{i.screeningTime}} , Seat number: {{i.cinemaHallCapacity}}</p>
+        {% if user.is_staff and user.is_authenticated %}
+            {% for key, value in brTicket.items %}
+                {% if i.id == key %}
+                    <p>Tickets bought: {{ value }}</p>
+                {% endif %}
+            {% endfor %}
+            Users who bought tickets:
+            {% for key, value in users.items %}
+                {% if i.id == key %}
+                    {{ value }}
+                {% endif %}
+            {% endfor %}
+            <br><br>
+        {% endif %}
+    {% endfor %}
+
+    {% if not user.is_staff and user.is_authenticated %}
+    <h1> Tickets {{user}}:  </h1>
+    {% for j in ticket %}
+        {% if j.customer == user %}
+            <p>Movie name: {{ j.movieName.movieName }} , Screening time: {{j.movieName.screeningTime}} , Seat number: {{j.seatNumber}}</p>
+        {% endif %}
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Buy ticket</button>
+      </form>
+    {% endif %}
+</body>
+</html>
